@@ -1,47 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-    </style>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="/styles/style.css" />
 </head>
 <body>
-    <h1>URL Shortener</h1>
-    <div>
-        <% if (locals.id) { %>
-            <p>URL Generated: http://localhost:8001/url/<%= id %></p>
-        <% } %>
-        <form method="POST" action="/url">
-            <label>Enter Your Original URL</label>
-            <input type="text" name="url" placeholder="https://www.example.com">
-            <button type="submit">Generate</button>
-        </form>
+    <div class="container">
+        <header>
+            <h1>🔗 <a href="http://localhost:8001/" >URL SHORTENER</a>
+</h1>
+            <p>Simplify your links, track performance, and share effortlessly.</p>
+        </header>
+
+        <main>
+            <% if (locals.id) { %>
+            <div class="generated-url">
+                <p>Your shortened URL:</p>
+                <div class="url-box">
+                    <input type="text" id="shortUrl" value="http://localhost:8001/url/<%= id %>" readonly />
+                    <button class="copy-btn" onclick="copyUrl()">Copy</button>
+                </div>
+            </div>
+            <% } %>
+
+            <form method="POST" action="/url" class="url-form">
+                <label for="urlInput">Enter Your Original URL</label>
+                <input id="urlInput" type="text" name="url" placeholder="https://www.example.com" required />
+                <button type="submit" class="generate-btn">Generate Short Link</button>
+            </form>
+
+            <% if (locals.urls) { %>
+            <div class="table-container">
+                <h2>All Shortened URLs</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Short ID</th>
+                            <th>Original URL</th>
+                            <th>Clicks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% urls.forEach((url, index) => { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><%= url.shortId %></td>
+                            <td><a href="<%= url.redirectUrl %>" target="_blank"><%= url.redirectUrl %></a></td>
+                            <td><%= url.visitHistory.length %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <% } %>
+        </main>
     </div>
-    <div>
-        <% if (locals.urls) { %>
-            <table>
-                <thead>
-                    <th>S. NO.</th>
-                    <th>ShortID</th>
-                    <th>Redirect</th>
-                    <th>Clicks</th>
-                </thead>
-                <tbody>
-                    <% urls.forEach((url, index) => { %>
-                    <tr>
-                        <td><%= index+1 %></td>
-                        <td> <%= url.shortId %> </td>
-                        <td> <%= url.redirectUrl %> </td>
-                        <td> <%= url.visitHistory.length  %> </td>
-                    </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        <% } %>
-    </div>
+
+    <script src="/scripts/script.js"></script>
+</body>
 </html>
