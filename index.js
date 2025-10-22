@@ -6,20 +6,26 @@ const path = require("path");
 const { connectToMongoDB } = require("./connect");
 const { restrictLoggedinUserOnly, checkAuth } = require("./middleware/auth");
 const URL = require("./models/url");
+require("dotenv").config();
+
 
 const app = express();
 const PORT = 8001;
 
 // Connect to MongoDB Atlas
-connectToMongoDB('mongodb+srv://thunder:thunder123@cluster0.2wgyzsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-  .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.log("❌ MongoDB Error:", err));
+const mongo_url = process.env.MONGO_ATLAS_URL;
+// console.log("🔍 MONGO_ATLAS_URL =", process.env.MONGO_ATLAS_URL);
+
+
+connectToMongoDB(mongo_url)
+  .then(() => console.log("MongoDB Connected..."))
+  .catch((err) => console.log("MongoDB Error:", err));
 
 // Create MongoDB-backed session store
 const store = MongoStore.create({
-  mongoUrl: 'mongodb+srv://thunder:thunder123@cluster0.2wgyzsk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0',
+  mongoUrl: mongo_url,
   crypto: {
-    secret: "thunder"
+    secret: process.env.MONGO_CRYPTO_SECRET,
   },
   touchAfter: 24 * 3600,
 });
